@@ -21,7 +21,8 @@ podDisruptionBudget: {}
 # rootCAs: []
 
 resources: {}
-externalIP: 178.128.255.56
+
+externalIP: 10.18.0.6
 debug:
   enabled: false
 
@@ -32,7 +33,8 @@ deploymentStrategy: {}
 # type: RollingUpdate
 
 securityContext: {}
-nodeSelector: {}
+nodeSelector:
+  wt-type: lb
 # key: value
 affinity: {}
 # key: value
@@ -115,7 +117,7 @@ kvprovider:
   ## ref: https://docs.traefik.io/user-guide/cluster/
 
   ## storeAcme has to be enabled to support HA Support using acme, but at least one kvprovider is needed
-  storeAcme: true
+  storeAcme: false
   importAcme: false
 
     # etcd:
@@ -137,10 +139,10 @@ kvprovider:
     #   key: "/etc/ssl/consul.key"
     #   insecureSkipVerify: true
     #
-  consul:
-    endpoint: consul-server:8500
-    watch: true
-    prefix: traefik
+#  consul:
+#    endpoint: consul-server:8500
+#    watch: true
+#    prefix: traefik
 
     ## Override default configuration template.
     ## For advanced users :)
@@ -171,12 +173,12 @@ acme:
     # List of sets of main and (optional) SANs to generate for
     # for wildcard certificates see https://docs.traefik.io/configuration/acme/#wildcard-domains
     domainsList:
-      - main: "*.kub.webtree.org"
+      - main: "*.dev.webtree.org"
       - sans:
-        - "kub.webtree.org"
-      - main: "*.web-tree.org"
-      - sans:
-        - "web-tree.org"
+        - "dev.webtree.org"
+#      - main: "*.web-tree.org"
+#      - sans:
+#        - "web-tree.org"
     # - main: "*.example.com"
     # - sans:
     #   - "example.com"
@@ -210,8 +212,8 @@ acme:
     cloudflare:
       CLOUDFLARE_EMAIL: ""
       CLOUDFLARE_API_KEY: ""
-    digitalocean:
-      DO_AUTH_TOKEN: ""
+#    digitalocean:
+#      DO_AUTH_TOKEN: ""
     dnsimple:
       DNSIMPLE_OAUTH_TOKEN: ""
       DNSIMPLE_BASE_URL: ""
@@ -272,7 +274,7 @@ acme:
   ## a kvprovider, you will re-request certs every time a pod (re-)starts
   ## and you WILL be rate limited!
   persistence:
-    enabled: false
+    enabled: true
     annotations: {}
     ## acme data Persistent Volume Storage Class
     ## If defined, storageClassName: <storageClass>
@@ -291,7 +293,7 @@ acme:
     # existingClaim:
 dashboard:
   enabled: true
-  domain: traefik.web-tree.org
+  domain: traefik.dev.webtree.org
   # serviceType: ClusterIP
   service: {}
     # annotations:

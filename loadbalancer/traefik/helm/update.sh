@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-helm upgrade --namespace=webtree -f values.yaml traefik stable/traefik
+helm upgrade --namespace=kube-public -f values.yaml traefik stable/traefik --reuse-values

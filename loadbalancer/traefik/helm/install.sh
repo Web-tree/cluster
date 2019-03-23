@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
-helm install stable/traefik --name traefik --namespace webtree -f values.yaml
+read -p "digital ocean api key: " dotoken
+kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+helm install stable/traefik --name traefik --namespace webtree -f values.yaml --set acme.dnsProvider.digitalocean.DO_AUTH_TOKEN=${dotoken}

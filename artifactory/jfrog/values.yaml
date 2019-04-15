@@ -1,0 +1,16 @@
+artifactory:
+  image:
+    repository: docker.bintray.io/jfrog/artifactory-oss
+  persistence:
+    enabled: true
+    size: 1Gi
+
+ingress:
+  enabled: true
+  hosts:
+    - artifactory.dev.webtree.org
+
+postgresql:
+  enabled: false
+nginx:
+  enabled: false

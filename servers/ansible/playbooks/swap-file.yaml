@@ -1,0 +1,5 @@
+- hosts: all
+  roles:
+    - role: swapfile
+      swapfile_size: 10GB
+      swapfile_swappiness: 10

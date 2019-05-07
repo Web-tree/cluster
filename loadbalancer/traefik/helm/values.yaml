@@ -22,7 +22,7 @@ podDisruptionBudget: {}
 
 resources: {}
 
-externalIP: 10.18.0.6
+externalIP: 10.18.0.12
 debug:
   enabled: false
 
@@ -34,7 +34,7 @@ deploymentStrategy: {}
 
 securityContext: {}
 nodeSelector:
-  wt-type: lb
+  node-role.kubernetes.io/type: lb
 # key: value
 affinity: {}
 # key: value
@@ -307,9 +307,9 @@ dashboard:
     # - hosts:
     #   - traefik.example.com
   #   secretName: traefik-default-cert
-  auth: {}
-    # basic:
-  #   username: password
+  auth:
+     basic:
+      admin: CHANGEME
   statistics: {}
     ## Number of recent errors to show in the ‘Health’ tab
   # recentErrors:

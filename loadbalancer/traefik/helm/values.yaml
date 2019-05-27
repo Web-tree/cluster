@@ -22,7 +22,7 @@ podDisruptionBudget: {}
 
 resources: {}
 
-externalIP: 10.18.0.12
+externalIP: 10.19.0.5
 debug:
   enabled: false
 

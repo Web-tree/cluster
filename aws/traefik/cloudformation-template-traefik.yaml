@@ -1,0 +1,139 @@
+Parameters:
+  TraefikImage:
+    Type: String
+    Description: The Repository URI for the Traefik docker image
+  EcsCluster:
+    Type: String
+    Description: CloudFormation stack name
+  Subnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: The subnets in which the load balancer will run
+  Domain:
+    Type: String
+    Description: Domain in which tasks should be registered to - MUST already exist as a zone in Route53
+    Default: webtree.org
+
+Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName:
+        Fn::Sub: ${AWS::StackName}-LogGroup
+      RetentionInDays: 14
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub ${AWS::StackName}-Ecs
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "ecs:*"
+                  - "ec2:DescribeInstances"
+                Resource:
+                  - "*"
+  TaskDef:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Name: traefik
+          Image: !Ref TraefikImage
+          Environment:
+            - Name: STACK_NAME
+              Value: !Ref AWS::StackName
+            - Name: ENVIRONMENT
+              Value: !Ref Environment
+            - Name: CLUSTER_HOST
+              Value: !Ref ClusterHostMonitor
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: DOMAIN
+              Value: !Ref Domain
+          PortMappings:
+            - ContainerPort: 80
+            - ContainerPort: 8080
+          Memory: 512
+          MemoryReservation: 256
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region:
+                Ref: AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix:
+                Ref: AWS::StackName
+          Ulimits:
+            - HardLimit: 65536
+              SoftLimit: 10240
+              Name: nofile
+      TaskRoleArn: !GetAtt TaskRole.Arn
+  ECSServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [ecs.amazonaws.com]
+            Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+        - PolicyName: ecs-service
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: ['elasticloadbalancing:DeregisterInstancesFromLoadBalancer', 'elasticloadbalancing:DeregisterTargets',
+                         'elasticloadbalancing:Describe*', 'elasticloadbalancing:RegisterInstancesWithLoadBalancer',
+                         'elasticloadbalancing:RegisterTargets', 'ec2:Describe*', 'ec2:AuthorizeSecurityGroupIngress']
+                Resource: '*'
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn: ALBListenerHttp
+    Properties:
+      Cluster: !Ref EcsCluster
+      TaskDefinition: !Ref TaskDef
+      DesiredCount: 2
+      Role: !Ref 'ECSServiceRole'
+      LoadBalancers:
+        - ContainerName: traefik
+          ContainerPort: '80'
+          TargetGroupArn: !Ref 'ECSTG'
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+      PlacementStrategies:
+        - Field: attribute:ecs.availability-zone
+          Type: spread
+        - Field: instanceId
+          Type: spread
+  ApplicationScalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - application-autoscaling.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub ${AWS::StackName}-Ecs
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "application-autoscaling:*"
+                  - "cloudwatch:DescribeAlarms"
+                  - "cloudwatch:PutMetricAlarm"
+                  - "ecs:*"
+                Resource:
+                  - "*"

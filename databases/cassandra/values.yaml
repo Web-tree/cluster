@@ -97,9 +97,9 @@ readinessProbe:
 
     ## Configure node selector. Edit code below for adding selector to pods
     ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-    # selector:
-  # nodeSelector:
-  # cloud.google.com/gke-nodepool: pool-db
+selector:
+  nodeSelector:
+    "node-role.kubernetes.io/type": backend
 
 ## Additional pod annotations
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
@@ -219,8 +219,3 @@ exporter:
   #   cpu: 1
   #   memory: 1Gi
 
-nodes:
-  enabled: true
-  selector:
-    nodeSelector:
-      "node-role.kubernetes.io/type": backend

@@ -34,7 +34,7 @@ deploymentStrategy: {}
 
 securityContext: {}
 nodeSelector:
-  node-role.kubernetes.io/type: lb
+  "node-role.kubernetes.io/type": lb
 # key: value
 affinity: {}
 # key: value
@@ -309,7 +309,7 @@ dashboard:
   #   secretName: traefik-default-cert
   auth:
      basic:
-      admin: CHANGEME
+      admin: admin:$apr1$m0ny/BsP$GpLNu7gku9xTmOeEwZrfX/
   statistics: {}
     ## Number of recent errors to show in the ‘Health’ tab
   # recentErrors:

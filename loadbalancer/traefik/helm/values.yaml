@@ -2,12 +2,13 @@
 image: traefik
 imageTag: 1.7.9
 ## can switch the service type to NodePort if required
-serviceType: NodePort
+serviceType: LoadBalancer
+#serviceType: NodePort
 # loadBalancerIP: ""
 # loadBalancerSourceRanges: []
 whiteListSourceRange: []
 externalTrafficPolicy: Cluster
-replicas: 1
+replicas: 2
 # startupArguments:
 #   - "--ping"
 #   - "--ping.entrypoint=http"
@@ -22,7 +23,7 @@ podDisruptionBudget: {}
 
 resources: {}
 
-externalIP: 10.19.0.5
+#externalIP: 10.19.0.5
 debug:
   enabled: false
 
@@ -33,8 +34,8 @@ deploymentStrategy: {}
 # type: RollingUpdate
 
 securityContext: {}
-nodeSelector:
-  "node-role.kubernetes.io/type": lb
+nodeSelector: {}
+#  "node-role.kubernetes.io/type": lb
 # key: value
 affinity: {}
 # key: value
@@ -173,9 +174,9 @@ acme:
     # List of sets of main and (optional) SANs to generate for
     # for wildcard certificates see https://docs.traefik.io/configuration/acme/#wildcard-domains
     domainsList:
-      - main: "*.dev.webtree.org"
+      - main: "*.webtree.org"
       - sans:
-        - "dev.webtree.org"
+        - "webtree.org"
 #      - main: "*.web-tree.org"
 #      - sans:
 #        - "web-tree.org"
@@ -292,9 +293,9 @@ acme:
     ##
     # existingClaim:
 dashboard:
-  enabled: true
-  domain: traefik.dev.webtree.org
-  # serviceType: ClusterIP
+  enabled: false
+  domain: traefik-new.webtree.org
+  serviceType: NodePort
   service: {}
     # annotations:
   #   key: value
@@ -309,7 +310,7 @@ dashboard:
   #   secretName: traefik-default-cert
   auth:
      basic:
-      admin: admin:$apr1$m0ny/BsP$GpLNu7gku9xTmOeEwZrfX/
+      admin: admin:some-encoded-password
   statistics: {}
     ## Number of recent errors to show in the ‘Health’ tab
   # recentErrors:

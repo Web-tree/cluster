@@ -5,8 +5,8 @@ variable "github-organization" {
   type = string
   default = "web-tree"
 }
-variable "github-repositories" {
-  description = "List of repositories policies applying"
+variable "github-master-branch-protection" {
+  description = "List of repositories policies applying for master branch"
   type = list(string)
   default = [
     "agreement",
@@ -20,5 +20,14 @@ variable "github-repositories" {
     "mydata-web",
     "mystuff",
     "trust",
+  ]
+}
+
+variable "github-ghp-branch-protection" {
+  description = "List of repositories policies applying for github pages branch"
+  type = list(string)
+  default = [
+    "auth-web",
+    "mydata-web",
   ]
 }

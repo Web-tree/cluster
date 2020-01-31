@@ -1,10 +1,11 @@
 provider "github" {
-  token        = "${var.github-token}"
-  organization = "${var.github-organization}"
+  token        = var.github-token
+  organization = var.github-organization
 }
 
 resource "github_branch_protection" "master_branch" {
-  repository     = "imprint"
+  count = length(var.github-repositories)
+  repository     = var.github-repositories[count.index]
   branch         = "master"
   required_status_checks {
     strict   = true

@@ -9,6 +9,9 @@ resource "github_branch_protection" "master_branch" {
   branch         = "master"
   required_status_checks {
     strict   = true
+    contexts = [
+      "build"
+    ]
   }
   restrictions {
     teams = ["owners"]

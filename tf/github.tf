@@ -15,8 +15,8 @@ resource "github_branch_protection" "master_branch" {
   }
   restrictions {
     teams = [
-      "Web-tree/tools",
-      "Web-tree/owners"
+      "tools",
+      "owners"
     ]
   }
 }
@@ -30,7 +30,7 @@ resource "github_branch_protection" "ghp_branch" {
   }
   restrictions {
     teams = [
-      "Web-tree/tools",
+      "tools",
     ]
   }
 }

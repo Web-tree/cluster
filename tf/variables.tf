@@ -20,7 +20,7 @@ variable "github-master-branch-protection" {
     "mydata-web",
     "mystuff",
     "trust",
-    "shared-libs"
+#    "shared-libs"
   ]
 }
 

@@ -10,7 +10,7 @@ resource "github_branch_protection" "master_branch" {
   required_status_checks {
     strict   = true
     contexts = [
-      "build"
+      "validate"
     ]
   }
   restrictions {
